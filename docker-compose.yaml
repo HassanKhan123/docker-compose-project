@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: khan
+      MONGO_INITDB_ROOT_PASSWORD: khan123
+    container_name: mongodb
+  backend:
+    build: ./backend
+    ports:
+      - '80:80'
+    environment:
+      MONGODB_USERNAME: khan
+      MONGODB_PASSWORD: khan123
+    volumes:
+      - logs:/app/logs
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - mongodb
+
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend/src:/app/src
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+volumes:
+  data:
+  logs:
